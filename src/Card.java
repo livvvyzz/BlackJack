@@ -1,3 +1,4 @@
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -24,6 +25,7 @@ public class Card {
 		}
 		
 		img = new ImageIcon("src/cards/" + myRank + "_of_" + mySuit + ".png");
+		img = scaleImg(img);
 	}
 
 	public Suit getSuit() {
@@ -43,5 +45,11 @@ public class Card {
 		return number + " of " + mySuit.toString();
 	}
 	
-
+	public ImageIcon scaleImg(ImageIcon img){
+		ImageIcon imageIcon = img; // load the image to a imageIcon
+		Image image = imageIcon.getImage(); // transform it 
+		Image newimg = image.getScaledInstance(46, 60,  java.awt.Image.SCALE_FAST); // scale it the smooth way  
+		imageIcon = new ImageIcon(newimg);  // transform it back
+		return imageIcon;
+	}
 }

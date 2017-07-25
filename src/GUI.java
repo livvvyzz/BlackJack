@@ -276,7 +276,8 @@ public class GUI extends JFrame {
 			}
 		} else if (p.getName().equals("dealer")) {
 			// update text to show card
-			dSlot[dealerSlotIndex].setText(c.toString().substring(0, 7));
+			ImageIcon imageIcon = c.getImg();
+			dSlot[dealerSlotIndex].setIcon(imageIcon);
 			// increment player slot
 			if (dealerSlotIndex < dSlot.length) {
 				dealerSlotIndex++;
