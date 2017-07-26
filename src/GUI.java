@@ -38,6 +38,7 @@ public class GUI extends JFrame {
 	private JButton dealButton;
 	private JButton hitButton;
 	private JButton standButton;
+	private JButton replayButton;
 
 	// fields to keep track of what slots are in use
 	private int playerSlotIndex;
@@ -89,6 +90,8 @@ public class GUI extends JFrame {
 
 		standButton = new JButton("Stand");
 		standButton.setEnabled(false);
+		
+
 
 		playerScore = new JTextField();
 		playerScore.setText("Player: ");
@@ -100,29 +103,44 @@ public class GUI extends JFrame {
 
 		panel = new JPanel();
 		panel.setBackground(new Color(0, 128, 0));
+		
+		replayButton = new JButton("Replay");
+		replayButton.setEnabled(false);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap()
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addComponent(panel, GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
-								.addGroup(gl_contentPane.createSequentialGroup().addComponent(dealButton)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(hitButton)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(standButton)
-										.addPreferredGap(ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
-										.addComponent(dealerScore, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(8).addComponent(playerScore, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-						.addContainerGap()));
-		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING).addGroup(gl_contentPane
-				.createSequentialGroup().addContainerGap()
-				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE).addGap(18)
-				.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(dealButton)
-						.addComponent(hitButton).addComponent(standButton)
-						.addComponent(dealerScore, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
-						.addComponent(playerScore, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE))));
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(dealButton)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(hitButton)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(standButton)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(replayButton)
+							.addPreferredGap(ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
+							.addComponent(dealerScore, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGap(8)
+							.addComponent(playerScore, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(panel, GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
+					.addGap(18)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(dealButton)
+						.addComponent(hitButton)
+						.addComponent(standButton)
+						.addComponent(dealerScore, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(playerScore, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(replayButton)))
+		);
 		panel.setLayout(null);
 
 		JLabel dSlot1 = new JLabel("");
@@ -202,8 +220,8 @@ public class GUI extends JFrame {
 
 		this.endGame = new JLabel("");
 		endGame.setVisible(false);
-		endGame.setForeground(Color.GRAY);
-		endGame.setBounds(0, 0, 586, 253);
+		endGame.setForeground(Color.RED);
+		endGame.setBounds(0, 0, 586, 197);
 		panel.add(endGame);
 
 		contentPane.setLayout(gl_contentPane);
@@ -237,6 +255,9 @@ public class GUI extends JFrame {
 						game.hit(game.getPlayer());
 					} catch (InvalidMoveException e1) {
 						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 
 				}
@@ -254,7 +275,21 @@ public class GUI extends JFrame {
 						game.stand();
 					} catch (InvalidMoveException e1) {
 						e1.printStackTrace();
+					} catch (IOException e1) {
+						e1.printStackTrace();
 					}
+
+				}
+			}
+
+		});
+		
+		replayButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+
+				if (e.getSource() == replayButton) {
+					replayGame();
 
 				}
 			}
@@ -303,7 +338,11 @@ public class GUI extends JFrame {
 	}
 
 	public void endOfGame(Player player) {
-
+		
+		//disable hit and stand button
+		enableButtons(false);
+		//enable replay button
+		replayButton.setEnabled(true);
 		// enable end game screen
 		endGame.setVisible(true);
 		if (player != null) {
@@ -343,5 +382,32 @@ public class GUI extends JFrame {
 			playerScore.setText("Player: " + sum);
 		else if (p.getName().equals("dealer"))
 			dealerScore.setText("Dealer : " + sum);
+	}
+	
+	public void replayGame(){
+		dealButton.setEnabled(true);
+		replayButton.setEnabled(false);
+		enableButtons(false);
+		updateScore(game.getPlayer(), 0);
+		updateScore(game.getDealer(), 0);
+		
+		//set Jlabel icons to defualt
+		for(JLabel j : pSlot){
+			j.setIcon(null);
+		}
+		
+		for(JLabel j : dSlot){
+			j.setIcon(null);
+		}
+		
+		//set slot indexs to 1 again
+		playerSlotIndex = 0;
+		dealerSlotIndex = 0;
+		
+		game.getPlayer().emptyhand();
+		game.getDealer().emptyhand();
+		
+		endGame.setText(null);
+		endGame.setVisible(false);
 	}
 }

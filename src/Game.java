@@ -6,20 +6,23 @@ public class Game {
 	private Player player;
 	private Player dealer;
 	private GUI gui;
+	private BestMove move;
+	
 
 	public Game(GUI gui) throws InvalidMoveException, IOException {
 		this.gui = gui;
-		this.deck = new Deck(1, true);
+		this.deck = new Deck(1, true, this);
 		player = new Player("player", this);
 		dealer = new Player("dealer", this);
 		player.setOther(dealer);
 		dealer.setOther(player);
+		move = new BestMove(this);
 		initialDeal();
 		this.gui.enableButtons(true);
 
 	}
 
-	public void initialDeal() throws InvalidMoveException {
+	public void initialDeal() throws InvalidMoveException, IOException {
 
 		// deal players first 2 cards
 		dealCard(player, deck.dealNextCard());
@@ -67,19 +70,19 @@ public class Game {
 		p.addCard(c);
 	}
 
-	public void hit(Player p) throws InvalidMoveException {
+	public void hit(Player p) throws InvalidMoveException, IOException {
 		Card c = deck.dealNextCard();
 		dealCard(p, c);
 		checkIfWon();
 		this.gui.enableButtons(true);
 	}
 
-	public void stand() throws InvalidMoveException {
+	public void stand() throws InvalidMoveException, IOException {
 		this.gui.enableButtons(false);
 		endOfGame();
 	}
 
-	public void endOfGame() throws InvalidMoveException {
+	public void endOfGame() throws InvalidMoveException, IOException {
 		gui.setCard(dealer, dealer.getHoldCard());
 
 		// check if dealer hand is <= 16
@@ -94,6 +97,10 @@ public class Game {
 
 	public Player getPlayer() {
 		return player;
+	}
+	
+	public Player getDealer(){
+		return dealer;
 	}
 
 	public void getWinningPlayer() {
@@ -115,6 +122,20 @@ public class Game {
 	
 	public void updateScore(Player p){
 		gui.updateScore(p, p.getHandSum());
+	}
+	
+	public void newDeck() throws InvalidMoveException, IOException{
+		Deck d = new Deck(1, true, this);
+		this.deck = d;
+		move.newPack(d);
+	}
+	
+	public Deck getDeck(){
+		return this.deck;
+	}
+	
+	public void updateBestMove(Card c){
+		move.updateCount(c);
 	}
 
 }

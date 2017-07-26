@@ -5,15 +5,11 @@ public class Deck {
 
 	private Card[] myCards;
 	private int numCards;
+	private Game game;
 	
-	public Deck() throws InvalidMoveException, IOException{
+	public Deck(int numDecks, boolean shuffle, Game game) throws InvalidMoveException, IOException{
 		
-		//call the other constructor, defining 1 deck without shuffling
-		this(1, false);
-	}
-	
-	public Deck(int numDecks, boolean shuffle) throws InvalidMoveException, IOException{
-		
+		this.game = game;
 		this.numCards = numDecks * 52;
 		this.myCards = new Card[this.numCards];
 		
@@ -64,7 +60,7 @@ public class Deck {
 		}
 	}
 	
-	public Card dealNextCard(){
+	public Card dealNextCard() throws InvalidMoveException, IOException{
 
 		
 		//get the top card
@@ -76,8 +72,14 @@ public class Deck {
 		}
 		this.myCards[this.numCards-1] = null;
 		
+		//send to BestMove to update count
+		game.updateBestMove(top);
 		//decrement num of cards in deck
 		this.numCards--;
+		
+		if(numCards <= 0){
+			game.newDeck();
+		}
 		
 		return top;
 	}
@@ -94,4 +96,5 @@ public class Deck {
 		System.out.printf("\t\t[%d other]\n", this.numCards-numToPrint);
 		
 	}
+
 }
