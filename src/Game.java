@@ -6,7 +6,6 @@ public class Game {
 	private Player player;
 	private Player dealer;
 	private GUI gui;
-	private BestMove move;
 	
 
 	public Game(GUI gui) throws InvalidMoveException, IOException {
@@ -16,7 +15,6 @@ public class Game {
 		dealer = new Player("dealer", this);
 		player.setOther(dealer);
 		dealer.setOther(player);
-		move = new BestMove(this);
 		initialDeal();
 		this.gui.enableButtons(true);
 
@@ -106,8 +104,15 @@ public class Game {
 	public void getWinningPlayer() {
 		int dealerScore = dealer.getHandSum();
 		int playerScore = player.getHandSum();
-
-		if (dealerScore < playerScore)
+		
+		//check neither have gone over 21
+		if(dealerScore > 21){
+			gui.endOfGame(player);
+		}
+		else if(playerScore > 21){
+			gui.endOfGame(dealer);
+		}
+		else if (dealerScore < playerScore)
 			gui.endOfGame(player);
 		else if (dealerScore > playerScore)
 			gui.endOfGame(dealer);
@@ -127,15 +132,8 @@ public class Game {
 	public void newDeck() throws InvalidMoveException, IOException{
 		Deck d = new Deck(1, true, this);
 		this.deck = d;
-		move.newPack(d);
 	}
 	
-	public Deck getDeck(){
-		return this.deck;
-	}
-	
-	public void updateBestMove(Card c){
-		move.updateCount(c);
-	}
+
 
 }

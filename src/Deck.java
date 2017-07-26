@@ -71,9 +71,6 @@ public class Deck {
 			this.myCards[c-1] = this.myCards[c];
 		}
 		this.myCards[this.numCards-1] = null;
-		
-		//send to BestMove to update count
-		game.updateBestMove(top);
 		//decrement num of cards in deck
 		this.numCards--;
 		
